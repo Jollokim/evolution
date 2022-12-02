@@ -7,18 +7,21 @@ import random
 
 def adaptive_mutation(population: np.ndarray, mutation_rate=None):
     """
-        Constant mutation rate over an individual
+        Adaptive mutation rate. Mutation rate is calculated based on individuals fitness.
     """
     genom_size = len(population[0].genom)
 
     next_population = np.empty(len(population)*2, dtype=Individual)
 
+    # create next population array
     for i in range(len(population)):
         next_population[i] = copy.deepcopy(population[i])
 
+    # put parents in next generation
     for i in range(len(population)):
         mutation_rate = (1 - (population[i].get_fitness() / len(population[i].genom)))
 
+        # based on mutation rate flip bit
         for gene in range(genom_size):
             if random.random() < mutation_rate:
                 if population[i].genom[gene] == 0:
@@ -35,13 +38,18 @@ def constant_mutation(population: np.ndarray, mutation_rate: float):
     """
     genom_size = len(population[0].genom)
 
+    # create next population array
     next_population = np.empty(len(population)*2, dtype=Individual)
 
+    # put parents in next generation
     for i in range(len(population)):
         next_population[i] = copy.deepcopy(population[i])
 
+    # go through each parent, apply mutation and put as child in next gen
     for i in range(len(population)):
+        
         for gene in range(genom_size):
+            # based on mutation rate flip bit
             if random.random() < mutation_rate:
                 if population[i].genom[gene] == 0:
                     population[i].genom[gene] = 1
@@ -52,6 +60,10 @@ def constant_mutation(population: np.ndarray, mutation_rate: float):
     return next_population
 
 def selection_fitness(population: np.ndarray, population_fitness: np.ndarray, elites: int = 0):
+    """
+        Fitness proportional selection.
+    """
+
     rank_individual_dict = {}
 
     # rank the individuals based on fitness
@@ -108,6 +120,7 @@ def selection_fitness(population: np.ndarray, population_fitness: np.ndarray, el
 
 def selection_rank(population: np.ndarray, population_fitness: np.ndarray, elites: int = 0):
     """
+        Rank proportional selection.
         Creates next generation by rank scheme with n-th triangular number.
 
         https://math.stackexchange.com/questions/60578/what-is-the-term-for-a-factorial-type-operation-but-with-summation-instead-of-p
